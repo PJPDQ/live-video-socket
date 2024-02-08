@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>Demo Live Stream</title>
+    </head>
+    <body>
+        <h1>Demo Live Socket Video Streaming..</h1>
+        <br>
+        <img id="image1"></div>
+        <br>
+        <br>
+        <p id="base64-image"></p>
+
+        <script 
+            src="https://cdn.socket.io/4.7.4/socket.io.min.js" 
+            integrity="sha384-Gr6Lu2Ajx28mzwyVR8CFkULdCU7kMlZ9UthllibdOSo6qAiN+yXNHqtgdTvFXMT4" 
+            crossorigin="anonymous"
+        ></script>
+        <script type="text/javascript" charset="utf-8">
+            var socket = io();
+            socket.on("connect", function(){
+                socket.emit('live_feed', {data: "connected!"});
+            });
+            
+            socket.on("image", function(data) {
+                const img_elem = document.getElementById('image1');
+                img_elem.src = "data:image/jpeg;base64,"+data;
+                const p_elem = document.getElementById('base64-image');
+                p_elem.innerHTML = data;
+            });
+        </script>
+    </body>
+</html>
