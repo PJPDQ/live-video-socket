@@ -16,6 +16,6 @@ python main.py
 ```
 
 3. Open a browser and go to
-https://localhost:5000
+http://localhost:5000
 
 
