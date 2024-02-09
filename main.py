@@ -75,7 +75,7 @@ def disconnected():
 
 if __name__ == "__main__":
     try:
-        sio.run(app, debug=True, host="0.0.0.0", port=8000)
+        sio.run(app, debug=True, host="0.0.0.0", port=5000)
     except KeyboardInterrupt:
         print("Goodbye!")
         sys.exit(0)
