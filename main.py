@@ -5,6 +5,9 @@ from flask_socketio import SocketIO
 import cv2
 import base64
 import time
+from pathlib import Path
+import getopt
+
 app = Flask(__name__)
 sio = SocketIO(app)
 
@@ -12,6 +15,34 @@ cwd = os.getcwd()
 save_dir = f'{cwd}\\saved_dir'
 if not os.path.exists(save_dir):
     os.makedirs(save_dir)
+
+def check_camera(source):
+    source = str(source).strip()
+    chunks = source.split(':')
+    # handle drive letter ('c:', ...)
+    if len(chunks) > 1 and len(chunks[0]) == 1 and chunks[0].isalpha():
+        chunks[1] = chunks[0] + ':' + chunks[1]
+        del chunks[0]
+
+    source = chunks[0]
+    try: source = int(source)
+    except ValueError: pass
+    params = dict( s.split('=') for s in chunks[1:] )
+
+    cap = None
+    try:
+        return source
+    except Exception as e:
+        print(f"error = {e}")
+        return None
+
+args, sources = getopt.getopt(sys.argv[1:], '', 'shotdir=')
+args = dict(args)
+shotdir = args.get('--shotdir', '.')
+if len(sources) == 0:
+    sources = [ 0 ]
+
+print(check_camera(sources))
 
 
 @app.route('/')
@@ -29,16 +60,19 @@ def message(json, methods=['GET', 'POST']):
     # print("Recieved message")
     sio.emit('image', json)
 
-
 @sio.on('live_feed')
 def live_feed(json):
     '''
     Send live feed from opencv video webcam to bytes jpg.
     '''
+
+    # source = check_camera(source)
     os.chdir(save_dir)
     cap = cv2.VideoCapture(0)
     digit = len(str(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))))
     n = 0
+    if not cap.isOpened():
+        print("error!")
     while (cap.isOpened()):
         ret, img = cap.read()
         if ret:
